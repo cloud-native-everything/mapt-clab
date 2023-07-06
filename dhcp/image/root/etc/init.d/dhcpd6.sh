@@ -1,0 +1,1 @@
+/usr/sbin/dhcpd -6 -f -d --no-pid -cf /etc/dhcp/dhcpd6.conf

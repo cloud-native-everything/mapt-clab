@@ -1,0 +1,4 @@
+auto eth1
+iface eth1 inet6 static
+    address 2001:db8:ffff:1::10/64
+    gateway 2001:db8:ffff:1::1
