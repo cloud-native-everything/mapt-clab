@@ -1,9 +1,0 @@
-network:
-  version: 2
-  renderer: networkd
-  ethernets:
-    ens1:
-      accept-ra: no
-      addresses:
-        - 2001:db8:ffff:1::10/64
-      gateway6: 2001:db8:ffff:1::1
