@@ -17,8 +17,7 @@ config interface 'lan'
  
 config interface 'wan6'
         option ifname 'eth1'
-        option proto 'static'
-        option ip6addr '2001:db8:fffe::1/127'
+        option proto 'dhcpv6'
  
 config switch
         option name 'switch0'

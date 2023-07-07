@@ -3,13 +3,13 @@ all:
     linux:
       hosts:
         clab-mapt-demo-cpe:
-          ansible_host: 172.20.20.2
-        clab-mapt-demo-dhcp:
-          ansible_host: 172.20.20.7
-        clab-mapt-demo-pc:
-          ansible_host: 172.20.20.3
-        clab-mapt-demo-tester:
           ansible_host: 172.20.20.4
+        clab-mapt-demo-dhcp:
+          ansible_host: 172.20.20.3
+        clab-mapt-demo-pc:
+          ansible_host: 172.20.20.6
+        clab-mapt-demo-tester:
+          ansible_host: 172.20.20.2
     srl:
       hosts:
         clab-mapt-demo-srlinux1:
@@ -17,4 +17,4 @@ all:
     vr-sros:
       hosts:
         clab-mapt-demo-mapt:
-          ansible_host: 172.20.20.6
+          ansible_host: 172.20.20.7

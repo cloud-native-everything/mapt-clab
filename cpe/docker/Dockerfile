@@ -1,3 +1,9 @@
-FROM openwrt/rootfs
+FROM openwrt/rootfs:x86-64
 
-CMD "opkg install map map-t"
+RUN mkdir /var/lock && \
+    opkg update && \
+    opkg install map-t
+
+USER root
+# using exec format so that /sbin/init is proc 1 (see procd docs)
+CMD ["/sbin/init"]
