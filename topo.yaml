@@ -1,0 +1,48 @@
+name: mapt-demo
+
+topology:
+  nodes:
+    mapt:
+      kind: vr-sros
+      image: vrnetlab/vr-sros:23.3.R3
+      type: vsr-i
+      license: license-sros22.txt
+      startup-config: mapt/config.txt
+    srlinux1:
+      kind: srl
+      image: ghcr.io/nokia/srlinux:latest
+      type: ixrd3
+      startup-config: srlinux/config.json
+    dhcp:
+      kind: linux
+      image: ghcr.io/cloud-native-everything/dhcpd6:v2307
+      binds:
+        - dhcp/dhcpd6.conf:/etc/dhcp/dhcpd6.conf
+        - dhcp/eth1-ipv6-conf.sh:/eth1-ipv6-conf.sh
+      env:
+        DHCPD_PROTOCOL: 6
+      exec: 
+        - sh /eth1-ipv6-conf.sh
+        - sleep 2 
+        - sh /dhcpd6-init.sh      
+    tester:
+      kind: linux
+      image: travelping/scapy
+      binds:
+        - tester:/opt
+    cpe:
+      kind: linux
+      image: carter/openwrt:v0.1m
+      binds:
+        - cpe/network:/etc/config/network
+        - cpe/dhcp:/etc/config/dhcp
+    pc:
+      kind: linux
+      image: praqma/network-multitool
+
+  links:
+    - endpoints: ["mapt:eth1", "srlinux1:e1-1"]
+    - endpoints: ["tester:eth1", "srlinux1:e1-2"]
+    - endpoints: ["cpe:eth1", "srlinux1:e1-3"]
+    - endpoints: ["cpe:eth2", "pc:eth1"]
+    - endpoints: ["dhcp:eth1", "srlinux1:e1-4"]  
