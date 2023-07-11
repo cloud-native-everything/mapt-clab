@@ -9,10 +9,10 @@ config globals 'globals'
  
 config interface 'lan'
         option type 'bridge'
-        option ifname 'eth0.1'
+        option ifname 'eth2'
         option proto 'static'
         option netmask '255.255.255.0'
-        option ip6assign '60'
+        option ip6assign '64'
         option ipaddr '192.168.1.1'
  
 config interface 'wan6'
