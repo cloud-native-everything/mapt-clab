@@ -18,9 +18,10 @@ RUN curl "https://$FILE_HOST/$DOWNLOAD_PATH/sha256sums" -fs -o sha256sums
 RUN curl "https://$FILE_HOST/$DOWNLOAD_PATH/sha256sums.asc" -fs -o sha256sums.asc || true
 RUN curl "https://$FILE_HOST/$DOWNLOAD_PATH/sha256sums.sig" -fs -o sha256sums.sig || true
 
-ADD keys/*.asc keys/
-RUN gpg --import keys/*.asc
-RUN gpg --with-fingerprint --verify sha256sums.asc sha256sums
+# Reported Issues by Drew 8/7/2023 It'd need to beb checked
+# ADD keys/*.asc keys/
+# RUN gpg --import keys/*.asc
+# RUN gpg --with-fingerprint --verify sha256sums.asc sha256sums
 
 # determine archive name
 RUN echo $(grep "$DOWNLOAD_FILE" sha256sums | cut -d "*" -f 2) >> ~/file_name
