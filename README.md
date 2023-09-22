@@ -1,4 +1,8 @@
 # Work in progress!
+
+* This branch replaces the SR-Linux node with SR-OS node
+* OpenWRT is not currently working with MAP-T.
+
 # MAPT Demo with containerlab
 Welcome to the MAPT (Mapping of Address and Port with Translation) Demo with containerlab!
 
