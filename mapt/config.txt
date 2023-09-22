@@ -3,31 +3,16 @@
 # Built on Thu Mar 16 16:13:16 PDT 2023 by builder in /builds/c/233B/R1/panos/main/sros
 # Configuration format version 23.3 revision 0
 
-# Generated 2023-06-22T03:16:54.6Z by admin from 172.31.255.29
-# Commit ID 31
-#   Committed 2023-06-22T02:59:29.3Z by admin (MD-CLI) from 172.31.255.29
-# Commit ID 30
-#   Committed 2023-06-22T02:59:15.6Z by admin (MD-CLI) from 172.31.255.29
-# Commit ID 29
-#   Committed 2023-06-22T02:58:23.4Z by admin (MD-CLI) from 172.31.255.29
-# Commit ID 28
-#   Committed 2023-06-22T02:57:52.5Z by admin (MD-CLI) from 172.31.255.29
-# Commit ID 27
-#   Committed 2023-06-22T02:57:18.0Z by admin (MD-CLI) from 172.31.255.29
-# Commit ID 26
-#   Committed 2023-06-22T02:56:15.5Z by admin (MD-CLI) from 172.31.255.29
-# Commit ID 25
-#   Committed 2023-06-22T02:55:15.4Z by admin (MD-CLI) from 172.31.255.29
-# Commit ID 24
-#   Committed 2023-06-22T02:55:05.0Z by admin (MD-CLI) from 172.31.255.29
-# Commit ID 23
-#   Committed 2023-06-22T02:53:04.3Z by admin (MD-CLI) from 172.31.255.29
-# Commit ID 22
-#   Committed 2023-06-22T02:52:47.5Z by admin (MD-CLI) from 172.31.255.29
-# Commit ID 21
-#   Committed 2023-06-22T02:52:30.4Z by admin (MD-CLI) from 172.31.255.29
-# Commit ID 20
-#   Committed 2023-06-22T02:52:03.2Z by admin (MD-CLI) from 172.31.255.29
+# Generated 2023-09-21T15:10:28.2Z by admin from 172.31.255.29
+# Commit ID 4
+#   Committed 2023-09-21T15:10:24.8Z by admin (MD-CLI) from 172.31.255.29
+# Commit ID 3
+#   Committed 2023-09-21T15:09:24.8Z by admin (MD-CLI) from 172.31.255.29
+# Commit ID 2
+#   Committed 2023-09-21T15:08:34.3Z by admin (MD-CLI) from 172.31.255.29
+# Commit ID 1
+#   Committed 2023-09-20T22:59:02.2Z by system (MD-CLI) from Console
+#   Log       "System booted version B-23.3.R1."
 
 configure {
     card 1 {
@@ -313,10 +298,17 @@ configure {
                     mtu 1500
                     mapping-rule "RULE_0" {
                         admin-state enable
-                        ipv4-prefix 192.18.0.0/24
+                        ipv4-prefix 198.18.0.0/24
                         ea-length 12
                         psid-offset 6
                         rule-prefix 2001:db8:f0::/48
+                    }
+                    mapping-rule "RULE_1" {
+                        admin-state enable
+                        ipv4-prefix 198.18.1.0/24
+                        ea-length 12
+                        psid-offset 6
+                        rule-prefix 2001:db8:f1::/48
                     }
                 }
             }
@@ -713,4 +705,4 @@ persistent-indices {
     }
 }
 
-# Finished 2023-06-22T03:16:54.6Z
+# Finished 2023-09-21T15:10:28.3Z
