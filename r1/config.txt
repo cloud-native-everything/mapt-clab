@@ -1,0 +1,488 @@
+# TiMOS-B-23.3.R1 both/x86_64 Nokia 7750 SR Copyright (c) 2000-2023 Nokia.
+# All rights reserved. All use subject to applicable license agreements.
+# Built on Thu Mar 16 16:13:16 PDT 2023 by builder in /builds/c/233B/R1/panos/main/sros
+# Configuration format version 23.3 revision 0
+
+# Generated 2023-09-13T14:14:06.5Z by admin from 172.31.255.29
+# Commit ID 15
+#   Committed 2023-09-13T14:03:08.8Z by admin (MD-CLI) from 172.31.255.29
+
+configure {
+    card 1 {
+        card-type iom-v
+        mda 1 {
+            mda-type m20-v
+        }
+    }
+    lag "lag-1" {
+        admin-state enable
+        description "to BR"
+        mode network
+        lacp {
+            mode active
+            administrative-key 1
+        }
+        port 1/1/1 {
+        }
+    }
+    log {
+        filter "1001" {
+            named-entry "10" {
+                description "Collect only events of major severity or higher"
+                action forward
+                match {
+                    severity {
+                        gte major
+                    }
+                }
+            }
+        }
+        log-id "100" {
+            description "Default Serious Errors Log"
+            filter "1001"
+            source {
+                main true
+            }
+            destination {
+                memory {
+                    max-entries 500
+                }
+            }
+        }
+        log-id "99" {
+            description "Default System Log"
+            source {
+                main true
+            }
+            destination {
+                memory {
+                    max-entries 500
+                }
+            }
+        }
+    }
+    multicast-management {
+        chassis-level {
+            per-mcast-plane-capacity {
+                total-capacity dynamic
+                mcast-capacity {
+                    primary-percentage 87.5
+                    secondary-percentage 87.5
+                }
+                redundant-mcast-capacity {
+                    primary-percentage 87.5
+                    secondary-percentage 87.5
+                }
+            }
+        }
+    }
+    policy-options {
+        policy-statement "Redistribute NAT" {
+            entry 10 {
+                from {
+                    family [ipv4]
+                    protocol {
+                        name [nat]
+                    }
+                }
+                action {
+                    action-type accept
+                }
+            }
+        }
+        policy-statement "Redistribute NAT v6" {
+            entry 10 {
+                from {
+                    family [ipv6]
+                    protocol {
+                        name [nat]
+                    }
+                }
+                action {
+                    action-type accept
+                }
+            }
+        }
+    }
+    port 1/1/1 {
+        admin-state enable
+    }
+    port 1/1/2 {
+        admin-state enable
+    }
+    port 1/1/3 {
+        admin-state enable
+        ethernet {
+            mode access
+        }
+    }
+    port 1/1/4 {
+        admin-state enable
+    }
+    router "Base" {
+        autonomous-system 65000
+        interface "to br" {
+            port lag-1
+            ipv4 {
+                primary {
+                    address 192.168.1.0
+                    prefix-length 31
+                }
+            }
+            ipv6 {
+                address 2001:db8:ffff:: {
+                    prefix-length 127
+                }
+            }
+        }
+        interface "to dhcp6" {
+            admin-state enable
+            port 1/1/4
+            ipv6 {
+                address 2001:db8:ffff:4::1 {
+                    prefix-length 64
+                }
+            }
+        }
+        interface "to scapy tester" {
+            port 1/1/2
+            ipv4 {
+                primary {
+                    address 192.168.1.2
+                    prefix-length 31
+                }
+            }
+            ipv6 {
+                address 2001:db8:ffff:1::1 {
+                    prefix-length 64
+                }
+            }
+        }
+        bgp {
+            admin-state enable
+            family {
+                ipv4 true
+                ipv6 true
+            }
+            group "IBGP" {
+                admin-state enable
+                type internal
+                peer-as 65000
+                family {
+                    ipv4 true
+                }
+                local-as {
+                    as-number 65000
+                }
+                export {
+                    policy ["Redistribute NAT"]
+                }
+            }
+            group "IBGPv6" {
+                admin-state enable
+                type internal
+                peer-as 65000
+                family {
+                    ipv6 true
+                }
+                local-as {
+                    as-number 65000
+                }
+                export {
+                    policy ["Redistribute NAT v6"]
+                }
+            }
+            neighbor "192.168.1.1" {
+                admin-state enable
+                group "IBGP"
+                local-address 192.168.1.0
+            }
+            neighbor "2001:db8:ffff::1" {
+                admin-state enable
+                group "IBGPv6"
+                local-address 2001:db8:ffff::
+            }
+        }
+        static-routes {
+            route 192.0.2.0/24 route-type unicast {
+                next-hop "192.168.1.3" {
+                    admin-state enable
+                }
+            }
+            route 2001:db8:f0::/48 route-type unicast {
+                next-hop "2001:db8:ffff:1::2" {
+                    admin-state enable
+                }
+            }
+        }
+    }
+    service {
+        ies "10" {
+            admin-state enable
+            customer "1"
+            interface "to cpe" {
+                admin-state enable
+                sap 1/1/3 {
+                    admin-state enable
+                }
+                ipv6 {
+                    address 2001:db8:ffff:3::1 {
+                        prefix-length 64
+                    }
+                    dhcp6 {
+                        relay {
+                            admin-state enable
+                            server ["2001:db8:ffff:4::2"]
+                        }
+                    }
+                }
+            }
+        }
+    }
+    system {
+        name "r1"
+        security {
+            aaa {
+                local-profiles {
+                    profile "administrative" {
+                        default-action permit-all
+                        entry 10 {
+                            match "configure system security"
+                            action permit
+                        }
+                        entry 20 {
+                            match "show system security"
+                            action permit
+                        }
+                        entry 30 {
+                            match "tools perform security"
+                            action permit
+                        }
+                        entry 40 {
+                            match "tools dump security"
+                            action permit
+                        }
+                        entry 50 {
+                            match "admin system security"
+                            action permit
+                        }
+                        entry 100 {
+                            match "configure li"
+                            action deny
+                        }
+                        entry 110 {
+                            match "show li"
+                            action deny
+                        }
+                        entry 111 {
+                            match "clear li"
+                            action deny
+                        }
+                        entry 112 {
+                            match "tools dump li"
+                            action deny
+                        }
+                        netconf {
+                            base-op-authorization {
+                                action true
+                                cancel-commit true
+                                close-session true
+                                commit true
+                                copy-config true
+                                create-subscription true
+                                delete-config true
+                                discard-changes true
+                                edit-config true
+                                get true
+                                get-config true
+                                get-data true
+                                get-schema true
+                                kill-session true
+                                lock true
+                                validate true
+                            }
+                        }
+                    }
+                    profile "default" {
+                        entry 10 {
+                            match "exec"
+                            action permit
+                        }
+                        entry 20 {
+                            match "exit"
+                            action permit
+                        }
+                        entry 30 {
+                            match "help"
+                            action permit
+                        }
+                        entry 40 {
+                            match "logout"
+                            action permit
+                        }
+                        entry 50 {
+                            match "password"
+                            action permit
+                        }
+                        entry 60 {
+                            match "show config"
+                            action deny
+                        }
+                        entry 65 {
+                            match "show li"
+                            action deny
+                        }
+                        entry 66 {
+                            match "clear li"
+                            action deny
+                        }
+                        entry 67 {
+                            match "tools dump li"
+                            action deny
+                        }
+                        entry 68 {
+                            match "state li"
+                            action deny
+                        }
+                        entry 70 {
+                            match "show"
+                            action permit
+                        }
+                        entry 75 {
+                            match "state"
+                            action permit
+                        }
+                        entry 80 {
+                            match "enable-admin"
+                            action permit
+                        }
+                        entry 90 {
+                            match "enable"
+                            action permit
+                        }
+                        entry 100 {
+                            match "configure li"
+                            action deny
+                        }
+                    }
+                }
+            }
+            ssh {
+                server-cipher-list-v2 {
+                    cipher 190 {
+                        name aes256-ctr
+                    }
+                    cipher 192 {
+                        name aes192-ctr
+                    }
+                    cipher 194 {
+                        name aes128-ctr
+                    }
+                    cipher 200 {
+                        name aes128-cbc
+                    }
+                    cipher 205 {
+                        name 3des-cbc
+                    }
+                    cipher 225 {
+                        name aes192-cbc
+                    }
+                    cipher 230 {
+                        name aes256-cbc
+                    }
+                }
+                client-cipher-list-v2 {
+                    cipher 190 {
+                        name aes256-ctr
+                    }
+                    cipher 192 {
+                        name aes192-ctr
+                    }
+                    cipher 194 {
+                        name aes128-ctr
+                    }
+                    cipher 200 {
+                        name aes128-cbc
+                    }
+                    cipher 205 {
+                        name 3des-cbc
+                    }
+                    cipher 225 {
+                        name aes192-cbc
+                    }
+                    cipher 230 {
+                        name aes256-cbc
+                    }
+                }
+                server-mac-list-v2 {
+                    mac 200 {
+                        name hmac-sha2-512
+                    }
+                    mac 210 {
+                        name hmac-sha2-256
+                    }
+                    mac 215 {
+                        name hmac-sha1
+                    }
+                    mac 220 {
+                        name hmac-sha1-96
+                    }
+                    mac 225 {
+                        name hmac-md5
+                    }
+                    mac 240 {
+                        name hmac-md5-96
+                    }
+                }
+                client-mac-list-v2 {
+                    mac 200 {
+                        name hmac-sha2-512
+                    }
+                    mac 210 {
+                        name hmac-sha2-256
+                    }
+                    mac 215 {
+                        name hmac-sha1
+                    }
+                    mac 220 {
+                        name hmac-sha1-96
+                    }
+                    mac 225 {
+                        name hmac-md5
+                    }
+                    mac 240 {
+                        name hmac-md5-96
+                    }
+                }
+            }
+            user-params {
+                local-user {
+                    user "admin" {
+                        password "$2y$10$TQrZlpBDra86.qoexZUzQeBXDY1FcdDhGWdD9lLxMuFyPVSm0OGy6"
+                        access {
+                            console true
+                        }
+                        console {
+                            member ["administrative"]
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+persistent-indices {
+    description "Persistent indices are maintained by the system and must not be modified."
+    vrtr-if-id {
+        router-name "10" interface-name "to cpe" vrtr-id 1 if-index 4
+        router-name "Base" interface-name "to br" vrtr-id 1 if-index 2
+        router-name "Base" interface-name "to dhcp6" vrtr-id 1 if-index 5
+        router-name "Base" interface-name "to scapy tester" vrtr-id 1 if-index 3
+    }
+    chassis-mac {
+        client lag index 1 pool 1 offset 321
+    }
+}
+
+# Finished 2023-09-13T14:14:06.6Z
