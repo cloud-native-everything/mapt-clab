@@ -4,45 +4,51 @@ topology:
   nodes:
     mapt:
       kind: vr-sros
-      image: vrnetlab/vr-sros:23.3.R3
+      image: vrnetlab/vr-sros:23.3.R1
       type: vsr-i
       license: license-sros22.txt
       startup-config: mapt/config.txt
-    srlinux1:
-      kind: srl
-      image: ghcr.io/nokia/srlinux:latest
-      type: ixrd3
-      startup-config: srlinux/config.json
+    r1:
+      kind: vr-sros
+      image: vrnetlab/vr-sros:23.3.R1
+      type: vsr-i
+      license: license-sros22.txt
+      startup-config: r1/config.txt
     dhcp:
       kind: linux
       image: ghcr.io/cloud-native-everything/dhcpd6:v2307
       binds:
         - dhcp/dhcpd6.conf:/etc/dhcp/dhcpd6.conf
-        - dhcp/eth1-ipv6-conf.sh:/eth1-ipv6-conf.sh
       env:
         DHCPD_PROTOCOL: 6
       exec: 
-        - sh /eth1-ipv6-conf.sh
-        - sleep 2 
-        - sh /dhcpd6-init.sh      
+        - ip -6 addr add 2001:db8:ffff:4::2/64 dev eth1
+        - ip -6 route add ::/0 via 2001:db8:ffff:4::1 metric 128
+        - sh /dhcpd6-init.sh
     tester:
       kind: linux
       image: travelping/scapy
       binds:
         - tester:/opt
+      exec:
+        - ip addr add 192.168.1.3/31 dev eth1
+        - ip -6 addr add 2001:db8:ffff:1::2/64 dev eth1
+        - ip route add 0.0.0.0/1 via 192.168.1.2
+        - ip route add 128.0.0.0/1 via 192.168.1.2
+        - ip -6 route add ::/0 via 2001:db8:ffff:1::1 metric 128
     cpe:
       kind: linux
-      image: carter/openwrt:v0.1m
-      binds:
-        - cpe/network:/etc/config/network
-        - cpe/dhcp:/etc/config/dhcp
+      image: openwrt/rootfs:23.05-RC3-MAP
     pc:
       kind: linux
       image: praqma/network-multitool
+      exec:
+        - ip addr add 192.168.1.99/24 dev eth1
+        - ip route add 0.0.0.0/0 via 192.168.1.1 metric 1
 
   links:
-    - endpoints: ["mapt:eth1", "srlinux1:e1-1"]
-    - endpoints: ["tester:eth1", "srlinux1:e1-2"]
-    - endpoints: ["cpe:eth1", "srlinux1:e1-3"]
+    - endpoints: ["mapt:eth1", "r1:eth1"]
+    - endpoints: ["tester:eth1", "r1:eth2"]
+    - endpoints: ["cpe:eth1", "r1:eth3"]
     - endpoints: ["cpe:eth2", "pc:eth1"]
-    - endpoints: ["dhcp:eth1", "srlinux1:e1-4"]  
+    - endpoints: ["dhcp:eth1", "r1:eth4"]  
